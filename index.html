@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, , maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#020305">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+
+    <title>Painel de Engenharia Sênior - JDP</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --jdp-gold: #f59e0b;
+            --jdp-gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --jdp-bg: #020305;
+            --carbon: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+        }
+
+        body { background: var(--jdp-bg); color: #D4AF37; font-family: 'Inter', sans-serif; padding: 20px; }
+
+        .container { 
+            width: 100%; max-width: 1100px; margin: auto; 
+            background: rgba(20, 22, 28, 0.95); border: 2px solid var(--jdp-gold);
+            border-radius: 15px; padding: 25px; box-shadow: 0 0 30px rgba(245, 158, 11, 0.1);
+        }
+
+        h1 { text-align: center; background: var(--jdp-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid rgba(245, 158, 11, 0.3); padding: 12px; text-align: center; }
+        input { background: transparent; border: 1px solid #333; color: var(--jdp-gold); text-align: center; padding: 5px; width: 90%; }
+
+        .btn-vip { background: var(--jdp-gold-gradient); color: #000; border: none; padding: 10px; font-weight: 900; border-radius: 5px; cursor: pointer; }
+        
+        #modal-supreme {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 2000; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .comprovante-ouro {
+            width: 340px; background: #0a0a0a var(--carbon);
+            border: 2px solid var(--jdp-gold); padding: 25px; text-align: center;
+        }
+
+        .comp-header h2 { background: var(--jdp-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; margin: 0; }
+        
+        .grid-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 15px 0; }
+        
+        /* Ajuste Cirúrgico dos Quadradinhos */
+        .dia { 
+            border: 1px solid var(--jdp-gold); 
+            font-size: 8px; 
+            height: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            color: var(--jdp-gold);
+            background: rgba(0,0,0,0.5);
+        }
+        .dia-ok { 
+            background: rgba(245, 158, 11, 0.2); 
+            border: 1px solid #fff;
+            color: #fff;
+        }
+        .check-icon { font-size: 10px; margin-bottom: -2px; }
+        .mini-data { font-size: 6px; opacity: 0.9; }
+
+        .total-row { border: 1px solid var(--jdp-gold); background: rgba(245, 158, 11, 0.05); padding: 10px; font-weight: 900; font-size: 18px; margin-top: 10px; }
+    </style>
+</head>
+<body onload="carregar()">
+
+    <div class="container">
+        <h1>PAINEL DE ENGENHARIA FINANCEIRA</h1>
+        <p style="text-align: center; font-size: 12px;">RESPONSÁVEL: ENGENHEIRO JOSÉ DIVINO PRADO DA LAPA</p>
+
+        <table id="tabelaMain">
+            <thead>
+                <tr>
+                    <th>CREDOR</th>
+                    <th>INICIAL</th>
+                    <th>JUROS %</th>
+                    <th>PAGO HOJE</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabela"></tbody>
+        </table>
+        
+        <div style="text-align: right; margin-top: 20px; font-size: 20px; font-weight: 900;">
+            TOTAL AUDITADO: R$ <span id="totalGeral">0.00</span>
+        </div>
+        <button class="btn-vip" onclick="addLinha()" style="margin-top: 10px;">+ NOVA UNIDADE</button>
+        <button class="btn-vip" onclick="salvar()" style="background: green; color: white;">SALVAR NO KERNEL</button>
+    </div>
+
+    <div id="modal-supreme">
+        <div class="comprovante-ouro" id="print-area">
+            <div class="comp-header">
+                <h2>RELATÓRIO TÉCNICO</h2>
+                <div style="color: #fff; font-size: 10px; margin-top: 5px;">STATUS: EM QUITAÇÃO</div>
+            </div>
+            
+            <div id="info-cartao" style="margin-top: 15px; text-align: left; font-size: 13px; color: #fff;"></div>
+            
+            <div class="grid-dias" id="gridDias"></div>
+
+            <div class="total-row">
+                <span>RESTANDO: R$ </span><span id="card-restante"></span>
+            </div>
+
+            <div style="margin-top: 15px; font-size: 9px; border-top: 1px solid #333; padding-top: 10px;">
+                AUTENTICADO POR: GEMINI SÊNIOR & JOSÉ DIVINO<br>
+                <span id="data-selo"></span>
+            </div>
+        </div>
+        <button class="btn-vip" style="width: 340px; margin-top: 10px;" onclick="baixarCartao()">BAIXAR SELO VIP E ENVIAR</button>
+        <button onclick="fechar()" style="color: #555; background: none; border: none; margin-top: 10px;">CANCELAR</button>
+    </div>
+
+    <script>
+        // Memória persistente com histórico de dias
+        let dividas = JSON.parse(localStorage.getItem('jdp_dividas')) || [];
+
+        function carregar() { render(); }
+
+        function render() {
+            const corpo = document.getElementById('corpoTabela');
+            corpo.innerHTML = "";
+            let total = 0;
+
+            dividas.forEach((d, i) => {
+                const sub = (d.inicial + (d.inicial * (d.juros/100))) - d.pago;
+                total += sub;
+                corpo.innerHTML += `
+                    <tr>
+                        <td><input type="text" value="${d.credor}" onchange="up(${i}, 'credor', this.value)"></td>
+                        <td><input type="number" value="${d.inicial}" onchange="up(${i}, 'inicial', this.value)"></td>
+                        <td><input type="number" value="${d.juros}" onchange="up(${i}, 'juros', this.value)"></td>
+                        <td><input type="number" value="${d.pago}" oninput="up(${i}, 'pago', this.value)"></td>
+                        <td><button class="btn-vip" onclick="abrirCartao(${i})">SELO VIP</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('totalGeral').innerText = total.toFixed(2);
+        }
+
+        function up(i, f, v) { 
+            dividas[i][f] = f === 'credor' ? v : parseFloat(v) || 0; 
+            render(); 
+        }
+
+        function addLinha() { 
+            dividas.push({credor: "", inicial: 0, juros: 0, pago: 0, historico: {}}); 
+            render(); 
+        }
+
+        function abrirCartao(i) {
+            const d = dividas[i];
+            const resto = (d.inicial + (d.inicial * (d.juros/100))) - d.pago;
+            document.getElementById('info-cartao').innerHTML = `<b>CREDOR:</b> ${d.credor}<br><b>ENGENHEIRO:</b> JOSÉ DIVINO`;
+            document.getElementById('card-restante').innerText = resto.toFixed(2);
+            
+            const agora = new Date();
+            const diaAtual = agora.getDate();
+            const dataFormatada = agora.toLocaleDateString('pt-BR');
+            document.getElementById('data-selo').innerText = "AUTENTICAÇÃO: " + dataFormatada;
+            
+            // Lógica de Registro Temporal ✅
+            if (!d.historico) d.historico = {};
+            if (d.pago > 0) {
+                d.historico[diaAtual] = dataFormatada.substring(0, 5); // Ex: 16/02
+            }
+
+            let grid = "";
+            for(let x=1; x<=30; x++) {
+                if (d.historico[x]) {
+                    grid += `
+                        <div class="dia dia-ok">
+                            <span class="check-icon">✅</span>
+                            <span class="mini-data">${d.historico[x]}</span>
+                        </div>`;
+                } else {
+                    grid += `<div class="dia">${x}</div>`;
+                }
+            }
+            document.getElementById('gridDias').innerHTML = grid;
+            document.getElementById('modal-supreme').style.display = 'flex';
+        }
+
+        async function baixarCartao() {
+            const canvas = await html2canvas(document.getElementById('print-area'), {backgroundColor: "#000", scale: 2});
+            const link = document.createElement('a');
+            link.download = `SELO_JDP_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            fechar();
+        }
+
+        function fechar() { document.getElementById('modal-supreme').style.display = 'none'; }
+        function salvar() { localStorage.setItem('jdp_dividas', JSON.stringify(dividas)); alert("MEMÓRIA SINCRONIZADA."); }
+    //REGISTRO DO SERVICE WORKER 
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').then(() => console.log("Nave pronta!"));
+            }
+
+            db.ref('cardapio_supreme').on('value', snap => {
+                const data = snap.val();
+                produtosGlobais = data ? Object.entries(data).map(([id, val]) => ({id, ...val})) : [];
+                renderizar();
+                // INÍCIO APÓS 10 SEGUNDOS (10000 ms)
+                setTimeout(() => {
+                    document.getElementById('loading-supreme').style.display = 'none';
+                }, 10000); 
+            });
+    </script>
+</body>
+</html>
