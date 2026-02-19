@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#020305">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
-    
+
     <title>Painel de Engenharia Sênior - JDP</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -17,21 +17,31 @@
             --carbon: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
         }
 
-        body { background: var(--jdp-bg); color: #D4AF37; font-family: 'Inter', sans-serif; padding: 20px; }
+        body { background: var(--jdp-bg); color: #D4AF37; font-family: 'Inter', sans-serif; padding: 20px; margin: 0; }
+
+        #login-screen {
+            position: fixed; inset: 0; background: var(--jdp-bg); z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .login-box {
+            padding: 30px; border: 2px solid var(--jdp-gold); border-radius: 15px;
+            text-align: center; background: rgba(20, 22, 28, 0.95);
+        }
 
         .container { 
-            width: 100%; max-width: 1100px; margin: auto; 
+            display: none; width: 100%; max-width: 1100px; margin: auto; 
             background: rgba(20, 22, 28, 0.95); border: 2px solid var(--jdp-gold);
             border-radius: 15px; padding: 25px; box-shadow: 0 0 30px rgba(245, 158, 11, 0.1);
         }
 
-        h1 { text-align: center; background: var(--jdp-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        h1 { text-align: center; background: var(--jdp-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; margin-bottom: 5px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid rgba(245, 158, 11, 0.3); padding: 12px; text-align: center; color: #D4AF37; }
-        input { background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; text-align: center; padding: 5px; width: 90%; }
+        input { background: rgba(255,255,255,0.05); border: 1px solid #333; color: #fff; text-align: center; padding: 8px; width: 90%; border-radius: 4px; }
 
-        .btn-vip { background: var(--jdp-gold-gradient); color: #000; border: none; padding: 10px; font-weight: 900; border-radius: 5px; cursor: pointer; }
+        .btn-vip { background: var(--jdp-gold-gradient); color: #000; border: none; padding: 10px 20px; font-weight: 900; border-radius: 5px; cursor: pointer; transition: 0.3s; margin: 5px; }
         
         #modal-supreme {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
@@ -43,38 +53,37 @@
             border: 2px solid var(--jdp-gold); padding: 25px; text-align: center;
         }
 
-        .comp-header h2 { background: var(--jdp-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; margin: 0; }
-        
         .grid-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 15px 0; }
         
-        .dia { 
-            border: 1px solid var(--jdp-gold); 
-            font-size: 8px; 
-            height: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            color: var(--jdp-gold);
-            background: rgba(0,0,0,0.5);
-        }
-        .dia-ok { 
-            background: var(--jdp-gold-gradient); 
-            border: 1px solid #fff;
-            color: #000;
-            font-weight: bold;
-        }
-        .check-icon { font-size: 10px; }
-        .mini-data { font-size: 6px; }
+        .dia { border: 1px solid var(--jdp-gold); font-size: 8px; height: 32px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--jdp-gold); }
+        .dia-ok { background: var(--jdp-gold-gradient); border: 1px solid #fff; color: #000; font-weight: bold; }
+        .mini-data-quadro { font-size: 6px; margin-top: 2px; }
 
-        .total-row { border: 1px solid var(--jdp-gold); background: rgba(245, 158, 11, 0.05); padding: 10px; font-weight: 900; font-size: 18px; margin-top: 10px; color: #D4AF37; }
+        .total-row { border: 1px solid var(--jdp-gold); background: rgba(245, 158, 11, 0.05); padding: 10px; font-weight: 900; font-size: 18px; margin-top: 10px; }
+
+        /* Estilo da frase motivacional */
+        .frase-parceria {
+            margin-top: 15px; font-size: 11px; font-style: italic; color: #fcf6ba; border: 1px solid rgba(245, 158, 11, 0.2); padding: 8px; border-radius: 5px; line-height: 1.4;
+        }
     </style>
 </head>
-<body onload="carregar()">
+<body>
 
-    <div class="container">
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color: var(--jdp-gold);">ACESSO RESTRITO</h2>
+            <p style="font-size: 12px;">ENGENHEIRO JOSÉ DIVINO</p>
+            <input type="password" id="pass-input" placeholder="Digite a Senha" style="margin-bottom: 15px; font-size: 18px;">
+            <br>
+            <button class="btn-vip" onclick="verificarSenha()">ENTRAR NO PAINEL</button>
+        </div>
+    </div>
+
+    <div class="container" id="main-content">
         <h1>PAINEL DE ENGENHARIA FINANCEIRA</h1>
-        <p style="text-align: center; font-size: 12px; color: #D4AF37;">RESPONSÁVEL: ENGENHEIRO JOSÉ DIVINO PRADO DA LAPA</p>
+        <p style="text-align: center; font-size: 12px; color: #D4AF37; margin-bottom: 20px;">
+            RESPONSÁVEL: <b>ENGENHEIRO JOSÉ DIVINO PRADO DA LAPA</b>
+        </p>
 
         <table id="tabelaMain">
             <thead>
@@ -89,26 +98,27 @@
             <tbody id="corpoTabela"></tbody>
         </table>
         
-        <div style="text-align: right; margin-top: 20px; font-size: 20px; font-weight: 900; color: #D4AF37;">
+        <div style="text-align: right; margin-top: 20px; font-size: 22px; font-weight: 900; color: #D4AF37;">
             TOTAL EM ABERTO: R$ <span id="totalGeral">0.00</span>
         </div>
-        <button class="btn-vip" onclick="addLinha()" style="margin-top: 10px;">+ NOVO CONTRATO</button>
-        <button class="btn-vip" onclick="salvar()" style="background: #008000; color: white;">SALVAR MEMÓRIA</button>
+
+        <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+            <button class="btn-vip" onclick="addLinha()">+ NOVO CONTRATO</button>
+            <button class="btn-vip" style="background: #008000; color: white;" onclick="salvarAutomatico()">SALVAR DADOS</button>
+        </div>
     </div>
 
     <div id="modal-supreme">
         <div class="comprovante-ouro" id="print-area">
-            <div class="comp-header">
-                <h2>RELATÓRIO TÉCNICO</h2>
-                <div style="color: #fff; font-size: 10px; margin-top: 5px;">STATUS: EM QUITAÇÃO</div>
-            </div>
-            
+            <h2 style="background: var(--jdp-gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; margin: 0;">RELATÓRIO TÉCNICO</h2>
             <div id="info-cartao" style="margin-top: 15px; text-align: left; font-size: 13px; color: #fff;"></div>
             
             <div class="grid-dias" id="gridDias"></div>
+            
+            <div class="total-row">RESTANDO: R$ <span id="card-restante"></span></div>
 
-            <div class="total-row">
-                <span>RESTANDO: R$ </span><span id="card-restante"></span>
+            <div class="frase-parceria">
+                "Obrigado por estar realizando o sonho da nossa empresa, você é o nosso parceiro!"
             </div>
 
             <div style="margin-top: 15px; font-size: 9px; border-top: 1px solid #333; padding-top: 10px; color: #D4AF37;">
@@ -116,14 +126,21 @@
                 <span id="data-selo"></span>
             </div>
         </div>
-        <button class="btn-vip" style="width: 340px; margin-top: 10px;" onclick="baixarCartao()">BAIXAR RELATÓRIO E ENVIAR</button>
+        <button class="btn-vip" style="width: 340px; margin-top: 10px;" onclick="baixarCartao()">BAIXAR RELATÓRIO (PNG)</button>
         <button onclick="fechar()" style="color: #fff; background: none; border: none; margin-top: 10px; cursor: pointer;">CANCELAR</button>
     </div>
 
     <script>
-        let dividas = JSON.parse(localStorage.getItem('jdp_dividas_v2')) || [];
+        const SENHA_MESTRA = "dr"; 
+        let dividas = JSON.parse(localStorage.getItem('jdp_contas_permanente')) || [];
 
-        function carregar() { render(); }
+        function verificarSenha() {
+            if(document.getElementById('pass-input').value === SENHA_MESTRA) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                render();
+            } else { alert("ACESSO NEGADO."); }
+        }
 
         function render() {
             const corpo = document.getElementById('corpoTabela');
@@ -132,18 +149,19 @@
 
             dividas.forEach((d, i) => {
                 const resto = d.total - d.pago;
-                totalAberto += resto;
+                totalAberto += (resto > 0 ? resto : 0);
                 corpo.innerHTML += `
                     <tr>
                         <td><input type="text" value="${d.credor}" onchange="up(${i}, 'credor', this.value)"></td>
                         <td><input type="number" value="${d.total}" onchange="up(${i}, 'total', this.value)"></td>
                         <td><input type="number" value="${d.vParcela}" onchange="up(${i}, 'vParcela', this.value)"></td>
                         <td><input type="number" value="${d.pago}" oninput="up(${i}, 'pago', this.value)"></td>
-                        <td><button class="btn-vip" onclick="abrirCartao(${i})">GERAR SELO</button></td>
+                        <td><button class="btn-vip" onclick="abrirCartao(${i})">SELO</button></td>
                     </tr>
                 `;
             });
-            document.getElementById('totalGeral').innerText = totalAberto.toFixed(2);
+            document.getElementById('totalGeral').innerText = totalAberto.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+            salvarAutomatico();
         }
 
         function up(i, f, v) { 
@@ -152,33 +170,32 @@
         }
 
         function addLinha() { 
-            dividas.push({credor: "", total: 0, vParcela: 300, pago: 0}); 
+            dividas.push({credor: "*******", total: 0, vParcela: 0, pago: 0}); 
             render(); 
+        }
+
+        function salvarAutomatico() {
+            localStorage.setItem('jdp_contas_permanente', JSON.stringify(dividas));
         }
 
         function abrirCartao(i) {
             const d = dividas[i];
             const resto = d.total - d.pago;
-            const parcelasPagas = Math.floor(d.pago / d.vParcela);
+            const parcelasPagas = d.vParcela > 0 ? Math.floor(d.pago / d.vParcela) : 0;
+            const dataHoje = new Date().toLocaleDateString('pt-BR').substring(0, 5); 
             
             document.getElementById('info-cartao').innerHTML = `
                 <b style="color: #D4AF37;">CREDOR:</b> ${d.credor}<br>
                 <b style="color: #D4AF37;">ENGENHEIRO:</b> JOSÉ DIVINO<br>
-                <b style="color: #D4AF37;">VALOR DIARIO:</b> R$ ${d.vParcela.toFixed(2)}
+                <b style="color: #D4AF37;">VALOR PARCELA:</b> R$ ${d.vParcela.toFixed(2)}
             `;
             document.getElementById('card-restante').innerText = resto.toFixed(2);
-            
-            const dataHoje = new Date().toLocaleDateString('pt-BR').substring(0, 5);
-            document.getElementById('data-selo').innerText = "AUTENTICAÇÃO: " + new Date().toLocaleDateString('pt-BR');
+            document.getElementById('data-selo').innerText = "AUTENTICAÇÃO: " + new Date().toLocaleString('pt-BR');
 
             let grid = "";
             for(let x = 1; x <= 30; x++) {
-                if (x <= parcelasPagas) {
-                    grid += `
-                        <div class="dia dia-ok">
-                            <span class="check-icon">✅</span>
-                            <span class="mini-data">${dataHoje}</span>
-                        </div>`;
+                if(x <= parcelasPagas) {
+                    grid += `<div class="dia dia-ok"><span>✅</span><span class="mini-data-quadro">${dataHoje}</span></div>`;
                 } else {
                     grid += `<div class="dia">${x}</div>`;
                 }
@@ -188,15 +205,14 @@
         }
 
         async function baixarCartao() {
-            const canvas = await html2canvas(document.getElementById('print-area'), {backgroundColor: "#000", scale: 2});
+            const canvas = await html2canvas(document.getElementById('print-area'), {backgroundColor: "#020305", scale: 2});
             const link = document.createElement('a');
-            link.download = `RELATORIO_JDP_${Date.now()}.png`;
+            link.download = `RELATORIO_JDP_${new Date().getTime()}.png`;
             link.href = canvas.toDataURL();
             link.click();
         }
 
         function fechar() { document.getElementById('modal-supreme').style.display = 'none'; }
-        function salvar() { localStorage.setItem('jdp_dividas_v2', JSON.stringify(dividas)); alert("SISTEMA SINCRONIZADO COM SUCESSO."); }
           //REGISTRO DO SERVICE WORKER 
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').then(() => console.log("Nave pronta!"));
@@ -214,3 +230,4 @@
     </script>
 </body>
 </html>
+    
